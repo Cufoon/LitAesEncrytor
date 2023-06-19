@@ -1,0 +1,54 @@
+{
+  "name": "litaes",
+  "version": "1.0.0",
+  "author": {
+    "name": "Lin Cufoon",
+    "email": "cufoon@gmail.com",
+    "url": "https://cufoon.com/"
+  },
+  "description": "A cli tool to help encrypt and decrypt your data using aes-256.",
+  "keywords": [
+    "aes",
+    "encryptor",
+    "decryptor",
+    "encrypt",
+    "decrypt"
+  ],
+  "homepage": "https://github.com/Cufoon/LitAesEncrytor",
+  "bugs": {
+    "url": "https://github.com/Cufoon/LitAesEncrytor/issues",
+    "email": "cufoon@gmail.com"
+  },
+  "main": "build/index.js",
+  "bin": {
+    "litaes": "./build/app.js"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cufoon/LitAesEncrytor.git"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "node ./script/clear.js && tsc --build && node ./script/makebin.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "20.3.1",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
+    "eslint": "8.43.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.32.2",
+    "prettier": "2.8.8",
+    "typescript": "5.1.3"
+  },
+  "dependencies": {
+    "chalk": "5.2.0",
+    "ora": "6.3.1"
+  }
+}

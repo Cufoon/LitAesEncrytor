@@ -1,4 +1,6 @@
 /// <reference types="node" resolution-mode="require"/>
+import { type i18nType } from './i18n.js';
+export declare const getI18n: () => i18nType;
 export declare const getCipherKey: (password: string) => Buffer;
 export declare const to2Str: (n: number) => string;
 export declare const eol: string;

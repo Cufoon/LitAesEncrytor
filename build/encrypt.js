@@ -7,7 +7,8 @@ import ora from 'ora';
 import chalk from 'chalk';
 import confirm from '@inquirer/confirm';
 import { PrependInitVectTransform, ProgressTransform } from './transform.js';
-import { getCipherKey, to2Str, eol, gestureIcon } from './util.js';
+import { getCipherKey, to2Str, eol, gestureIcon, getI18n } from './util.js';
+const i18n = getI18n();
 const encrypt = async ({ file, password, outFile, showProgress = true, onProgress, compress = true }) => {
     const initVectOrigin = randomBytes(16);
     const headerStr = `lit${compress ? 'c' : 'a'}`;
@@ -30,18 +31,18 @@ const encrypt = async ({ file, password, outFile, showProgress = true, onProgres
     const writeStreamPath = join(outFile ?? file + '.Lit');
     if (existsSync(writeStreamPath)) {
         const isContinue = await confirm({
-            message: `${writeStreamPath}\n目标输出文件存在，要覆盖吗？`,
+            message: `${writeStreamPath}\n${i18n['app.encrypt.tip.output_file_exists']}`,
             default: true
         });
         if (!isContinue) {
-            console.log('请重新指定目标输出文件再执行本程序');
+            console.log(i18n['app.encrypt.tip.redesignate_output_file']);
             return;
         }
     }
     const writeStream = createWriteStream(writeStreamPath);
     const spinner = ora({
-        text: '进度 00% [----------]',
-        prefixText: ` ${chalk.blue('(°ー°〃)')} 已用时间: 00:00${eol}`
+        text: `${i18n['app.encrypt.ui.progress']} 00% [----------]`,
+        prefixText: ` ${chalk.blue('(°ー°〃)')} ${i18n['app.encrypt.ui.elapsed_time']}: 00:00${eol}`
     });
     let lastProgressPercent = 0;
     let currentProgressPercent = 0;
@@ -54,7 +55,7 @@ const encrypt = async ({ file, password, outFile, showProgress = true, onProgres
                 const floored = Math.floor(percent);
                 if (floored > lastProgressPercent) {
                     lastProgressPercent = floored;
-                    spinner.text = `进度 ${to2Str(floored)}% ${gestureIcon(percent)}`;
+                    spinner.text = `${i18n['app.encrypt.ui.progress']} ${to2Str(floored)}% ${gestureIcon(percent)}`;
                 }
                 currentProgressPercent = percent;
             }
@@ -77,15 +78,15 @@ const encrypt = async ({ file, password, outFile, showProgress = true, onProgres
                 return;
             }
             if (encryptEnd) {
-                spinner.prefixText = ` ${chalk.green('(°ー°〃)')} 总共用时: ${to2Str(timeUsedMinutes)}:${to2Str(timeUsedSeconds)}${eol}`;
-                spinner.succeed('加密完成！🎉');
+                spinner.prefixText = ` ${chalk.green('(°ー°〃)')} ${i18n['app.encrypt.ui.total_time']}: ${to2Str(timeUsedMinutes)}:${to2Str(timeUsedSeconds)}${eol}`;
+                spinner.succeed(`${i18n['app.encrypt.ui.encryption_completed']}🎉`);
                 rs();
                 return;
             }
             const timeLeft = Math.ceil(((100 - currentProgressPercent) / currentProgressPercent) * timeUsed);
             const timeLeftMinutes = Math.floor(timeLeft / 60);
             const timeLeftSeconds = timeLeft - timeLeftMinutes * 60;
-            spinner.prefixText = ` ${chalk.blue('(°ー°〃)')} 已用时间: ${to2Str(timeUsedMinutes)}:${to2Str(timeUsedSeconds)} 预计剩余时间: ${to2Str(timeLeftMinutes)}:${to2Str(timeLeftSeconds)}${eol}`;
+            spinner.prefixText = ` ${chalk.blue('(°ー°〃)')} ${i18n['app.encrypt.ui.elapsed_time']}: ${to2Str(timeUsedMinutes)}:${to2Str(timeUsedSeconds)} ${i18n['app.encrypt.ui.estimated_remaining_time']}: ${to2Str(timeLeftMinutes)}:${to2Str(timeLeftSeconds)}${eol}`;
             clock(rs);
         }, 300);
     };

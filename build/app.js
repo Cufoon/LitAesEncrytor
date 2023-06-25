@@ -3,7 +3,8 @@ import { Command, Option } from '@commander-js/extra-typings';
 import encrypt from './encrypt.js';
 import decrypt from './decrypt.js';
 import { APP_VERSION_INFO } from './version.js';
-import { getPasswordFromUser } from './util.js';
+import { getI18n, getPasswordFromUser } from './util.js';
+const i18n = getI18n();
 const program = new Command();
 program
     .name('litaes')
@@ -52,7 +53,7 @@ program
             });
         }
         catch (e) {
-            console.log('出错了，检查一下吧！');
+            console.log(i18n['app.error.tip']);
             console.error(e);
         }
     }
@@ -78,7 +79,7 @@ program
             await decrypt({ file: file, password: password, outFile: options.outFile });
         }
         catch (e) {
-            console.log('出错了，检查一下吧！');
+            console.log(i18n['app.error.tip']);
             console.error(e);
         }
     }

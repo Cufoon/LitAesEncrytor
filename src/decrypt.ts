@@ -8,7 +8,9 @@ import chalk from 'chalk';
 import confirm from '@inquirer/confirm';
 
 import { ProgressTransform } from './transform.js';
-import { getCipherKey, to2Str, eol, gestureIcon } from './util.js';
+import { getCipherKey, to2Str, eol, gestureIcon, getI18n } from './util.js';
+
+const i18n = getI18n();
 
 export interface FuncParamsDecrypt {
   /** 需要解密的文件路径，相对或绝对 */
@@ -51,13 +53,13 @@ const decrypt: FuncDecrypt = async ({
   const chunksN = Math.ceil(originFileInfo.size / (64 * 1024));
   const initVect = await getInitVect(file);
   if (initVect === undefined || initVect.byteLength === 0) {
-    console.log('未能读取到初始向量！');
+    console.log(i18n['app.decrypt.error.fail_to_read_init_vector']);
     return;
   }
   const initVectOrigin = [];
   const len = initVect.byteLength;
   if (len !== 20) {
-    console.log('加密文件头错误！');
+    console.log(i18n['app.decrypt.error.file_header_wrong']);
     return;
   }
   const isCompressed = initVect[3] === 'c'.charCodeAt(0);
@@ -75,19 +77,19 @@ const decrypt: FuncDecrypt = async ({
     : resolve(dirname(file), `${originFile.name}.Til`);
   if (existsSync(writeStreamPath)) {
     const isContinue = await confirm({
-      message: `${writeStreamPath}\n目标输出文件存在，要覆盖吗？`,
+      message: `${writeStreamPath}\n${i18n['app.decrypt.tip.output_file_exists']}`,
       default: true
     });
     if (!isContinue) {
-      console.log('请重新指定目标输出文件再执行本程序');
+      console.log(i18n['app.decrypt.tip.redesignate_output_file']);
       return;
     }
   }
   const writeStream = createWriteStream(writeStreamPath);
 
   const spinner = ora({
-    text: '进度 00% [----------]',
-    prefixText: ` ${chalk.blue('(°ー°〃)')} 已用时间: 00:00${eol}`
+    text: `${i18n['app.decrypt.ui.progress']} 00% [----------]`,
+    prefixText: ` ${chalk.blue('(°ー°〃)')} ${i18n['app.decrypt.ui.elapsed_time']}: 00:00${eol}`
   });
 
   let lastProgressPercent = 0;
@@ -101,7 +103,9 @@ const decrypt: FuncDecrypt = async ({
         const floored = Math.floor(percent);
         if (floored > lastProgressPercent) {
           lastProgressPercent = floored;
-          spinner.text = `进度 ${to2Str(floored)}% ${gestureIcon(percent)}`;
+          spinner.text = `${i18n['app.decrypt.ui.progress']} ${to2Str(floored)}% ${gestureIcon(
+            percent
+          )}`;
         }
         currentProgressPercent = percent;
       }
@@ -125,10 +129,10 @@ const decrypt: FuncDecrypt = async ({
         return;
       }
       if (decryptEnd) {
-        spinner.prefixText = ` ${chalk.green('(°ー°〃)')} 总共用时: ${to2Str(
-          timeUsedMinutes
-        )}:${to2Str(timeUsedSeconds)}${eol}`;
-        spinner.succeed('解密完成！🎉');
+        spinner.prefixText = ` ${chalk.green('(°ー°〃)')} ${
+          i18n['app.decrypt.ui.total_time']
+        }: ${to2Str(timeUsedMinutes)}:${to2Str(timeUsedSeconds)}${eol}`;
+        spinner.succeed(`${i18n['app.decrypt.ui.decryption_completed']}🎉`);
         rs();
         return;
       }
@@ -138,11 +142,11 @@ const decrypt: FuncDecrypt = async ({
       const timeLeftMinutes = Math.floor(timeLeft / 60);
       const timeLeftSeconds = timeLeft - timeLeftMinutes * 60;
 
-      spinner.prefixText = ` ${chalk.blue('(°ー°〃)')} 已用时间: ${to2Str(
-        timeUsedMinutes
-      )}:${to2Str(timeUsedSeconds)} 预计剩余时间: ${to2Str(timeLeftMinutes)}:${to2Str(
-        timeLeftSeconds
-      )}${eol}`;
+      spinner.prefixText = ` ${chalk.blue('(°ー°〃)')} ${
+        i18n['app.decrypt.ui.elapsed_time']
+      }: ${to2Str(timeUsedMinutes)}:${to2Str(timeUsedSeconds)} ${
+        i18n['app.decrypt.ui.estimated_remaining_time']
+      }: ${to2Str(timeLeftMinutes)}:${to2Str(timeLeftSeconds)}${eol}`;
       clock(rs);
     }, 300);
   };

@@ -1,6 +1,21 @@
 import { EOL } from 'node:os';
 import crypto from 'node:crypto';
 import passwordInput from '@inquirer/password';
+import { i18n, type i18nType } from './i18n.js';
+
+let i18nOnly: i18nType | null = null;
+
+export const getI18n = (): i18nType => {
+  if (i18nOnly !== null) return i18nOnly;
+  const localeCode = Intl.DateTimeFormat().resolvedOptions().locale;
+  if (localeCode === 'zh-CN') {
+    const en = Object.assign({}, i18n.en);
+    i18nOnly = Object.assign(en, i18n.zh);
+    return i18nOnly;
+  }
+  i18nOnly = i18n.en;
+  return i18nOnly;
+};
 
 export const getCipherKey = (password: string) => {
   return crypto.createHash('sha256').update(password).digest();

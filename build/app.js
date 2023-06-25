@@ -33,6 +33,7 @@ program
     .argument('[password]', 'The password to encrypt a file using aes256')
     .option('-v, --verbose', 'Show more detail information')
     .option('-o, --out-file <file>', 'The encrypted output file path')
+    .option('-nc, --no-compress', 'Not compress file using brotli before encrypt')
     .addOption(new Option('-p, --password [password]', 'The password to encrypt a file using aes256').env('LITAES_PASSWORD'))
     .action(async (file, password, options, command) => {
     password = await getPasswordFromUser(password, options, command, options.verbose);
@@ -42,7 +43,18 @@ program
         console.log('options', options);
     }
     if (password !== undefined) {
-        encrypt({ file: file, password: password, outFile: options.outFile });
+        try {
+            await encrypt({
+                file: file,
+                password: password,
+                outFile: options.outFile,
+                compress: options.compress
+            });
+        }
+        catch (e) {
+            console.log('出错了，检查一下吧！');
+            console.error(e);
+        }
     }
 });
 program
@@ -62,7 +74,13 @@ program
         console.log('options', options);
     }
     if (password !== undefined) {
-        decrypt({ file: file, password: password, outFile: options.outFile });
+        try {
+            await decrypt({ file: file, password: password, outFile: options.outFile });
+        }
+        catch (e) {
+            console.log('出错了，检查一下吧！');
+            console.error(e);
+        }
     }
 });
 program.parse();

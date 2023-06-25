@@ -16,7 +16,7 @@ const dataApp = fs.readFileSync(appFilePath);
 fs.writeFileSync(appFilePath, '#!/usr/bin/env node\n');
 fs.appendFileSync(appFilePath, dataApp);
 
-const nowVersion = `LitAES v1.0.3(${nowDate.toLocaleDateString()} ${nowDate.toLocaleTimeString()})`;
+const nowVersion = `LitAES v1.0.5(${nowDate.toLocaleDateString()} ${nowDate.toLocaleTimeString()})`;
 const dataAppInfoPlaceholder = fs.readFileSync(appInfoFilePath).toString();
 const dataAppInfo = dataAppInfoPlaceholder.replace(
   'cufoon_application_version_info_placehodler',

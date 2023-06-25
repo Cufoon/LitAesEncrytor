@@ -1,6 +1,6 @@
 import { EOL } from 'node:os';
 import crypto from 'node:crypto';
-import { input } from '@inquirer/prompts';
+import passwordInput from '@inquirer/password';
 export const getCipherKey = (password) => {
     return crypto.createHash('sha256').update(password).digest();
 };
@@ -27,6 +27,9 @@ export const gestureIcon = (percent) => {
         index = 10;
     return gestureIcons[index];
 };
+export const makePromise = (fn) => new Promise((resolve, reject) => {
+    fn(resolve, reject);
+});
 export const isNull = (v) => v === undefined || v === null;
 export const isNullLike = (v) => isNull(v) ||
     v === '' ||
@@ -45,12 +48,7 @@ export const getPasswordFromUser = async (password, options, command, verbose = 
         return password;
     }
     if (options.password === true) {
-        password = await input({
-            message: 'please input your password: ',
-            transformer(value) {
-                return value.replaceAll(/./g, '*');
-            }
-        });
+        password = await passwordInput({ message: 'please input your password: ' });
     }
     else {
         password = options.password;

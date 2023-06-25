@@ -1,4 +1,9 @@
-import encrypt from './encrypt.js';
-import decrypt from './decrypt.js';
-import { ProgressTransform } from './transform.js';
-export { encrypt, decrypt, ProgressTransform };
+import encryptCore, {} from './encrypt.js';
+import decryptCore, {} from './decrypt.js';
+export { ProgressTransform } from './transform.js';
+export const encrypt = async (options) => {
+    await encryptCore({ showProgress: false, compress: false, ...options });
+};
+export const decrypt = async (options) => {
+    await decryptCore({ showProgress: false, ...options });
+};

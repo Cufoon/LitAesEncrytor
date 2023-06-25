@@ -1,31 +1,45 @@
 import { randomBytes, createCipheriv } from 'node:crypto';
-import { createReadStream, createWriteStream } from 'node:fs';
+import { createReadStream, createWriteStream, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { createBrotliCompress, constants } from 'node:zlib';
+import { createBrotliCompress, constants, type BrotliCompress } from 'node:zlib';
 import { statSync } from 'node:fs';
 
 import ora from 'ora';
 import chalk from 'chalk';
+import confirm from '@inquirer/confirm';
 
 import { PrependInitVectTransform, ProgressTransform } from './transform.js';
 import { getCipherKey, to2Str, eol, gestureIcon } from './util.js';
 
-interface FuncParamsEncrypt {
+export interface FuncParamsEncrypt {
   /** 需要加密的文件路径，相对或绝对 */
   file: string;
   /** 加密的密码 */
   password: string;
   /** 加密后文件的路径 */
   outFile?: string;
+  /** 展示进度 */
+  showProgress?: boolean;
+  /** 进度回调函数 */
+  onProgress?: (percent: number, allN: number) => any;
+  /** 是否压缩 */
+  compress?: boolean;
 }
 
 interface FuncEncrypt {
-  (p: FuncParamsEncrypt): void;
+  (p: FuncParamsEncrypt): Promise<void>;
 }
 
-const encrypt: FuncEncrypt = ({ file, password, outFile }) => {
+const encrypt: FuncEncrypt = async ({
+  file,
+  password,
+  outFile,
+  showProgress = true,
+  onProgress,
+  compress = true
+}) => {
   const initVectOrigin = randomBytes(16);
-  const headerStr = 'lit';
+  const headerStr = `lit${compress ? 'c' : 'a'}`;
   const header = headerStr.split('').map((item) => item.charCodeAt(0));
   initVectOrigin.forEach((item) => {
     header.push(item);
@@ -46,12 +60,24 @@ const encrypt: FuncEncrypt = ({ file, password, outFile }) => {
   });
   const cipher = createCipheriv('aes256', cipherKey, initVectOrigin);
   const prependInitVect = new PrependInitVectTransform(initVect);
-  const writeStream = createWriteStream(join(outFile ?? file + '.Lit'));
+  const writeStreamPath = join(outFile ?? file + '.Lit');
+  if (existsSync(writeStreamPath)) {
+    const isContinue = await confirm({
+      message: `${writeStreamPath}\n目标输出文件存在，要覆盖吗？`,
+      default: true
+    });
+    if (!isContinue) {
+      console.log('请重新指定目标输出文件再执行本程序');
+      return;
+    }
+  }
+
+  const writeStream = createWriteStream(writeStreamPath);
 
   const spinner = ora({
     text: '进度 00% [----------]',
     prefixText: ` ${chalk.blue('(°ー°〃)')} 已用时间: 00:00${eol}`
-  }).start();
+  });
 
   let lastProgressPercent = 0;
   let currentProgressPercent = 0;
@@ -59,30 +85,40 @@ const encrypt: FuncEncrypt = ({ file, password, outFile }) => {
   const progress = new ProgressTransform({
     total: chunksN,
     updateProcess: (percent) => {
-      const floored = Math.floor(percent);
-      if (floored > lastProgressPercent) {
-        lastProgressPercent = floored;
-        spinner.text = `进度 ${to2Str(floored)}% ${gestureIcon(percent)}`;
+      onProgress && onProgress(percent, chunksN);
+      if (showProgress) {
+        const floored = Math.floor(percent);
+        if (floored > lastProgressPercent) {
+          lastProgressPercent = floored;
+          spinner.text = `进度 ${to2Str(floored)}% ${gestureIcon(percent)}`;
+        }
+        currentProgressPercent = percent;
       }
-      currentProgressPercent = percent;
     }
   });
 
   let timerId: NodeJS.Timeout | null = null;
   let encryptEnd = false;
-  const clock = () => {
+  let decryptErrored = false;
+  const clock = (rs: { (value: void | PromiseLike<void>): void; (): void }) => {
     timerId && clearTimeout(timerId);
     timerId = setTimeout(() => {
+      timerId && clearTimeout(timerId);
       timerId = null;
       const now = Date.now();
       const timeUsed = Math.floor((now - startTime) / 1000);
       const timeUsedMinutes = Math.floor(timeUsed / 60);
       const timeUsedSeconds = timeUsed - timeUsedMinutes * 60;
+      if (decryptErrored) {
+        spinner.stop();
+        return;
+      }
       if (encryptEnd) {
         spinner.prefixText = ` ${chalk.green('(°ー°〃)')} 总共用时: ${to2Str(
           timeUsedMinutes
         )}:${to2Str(timeUsedSeconds)}${eol}`;
         spinner.succeed('加密完成！🎉');
+        rs();
         return;
       }
       const timeLeft = Math.ceil(
@@ -96,16 +132,43 @@ const encrypt: FuncEncrypt = ({ file, password, outFile }) => {
       )}:${to2Str(timeUsedSeconds)} 预计剩余时间: ${to2Str(timeLeftMinutes)}:${to2Str(
         timeLeftSeconds
       )}${eol}`;
-      clock();
-    }, 500);
+      clock(rs);
+    }, 300);
   };
 
-  writeStream.on('finish', () => {
-    encryptEnd = true;
-  });
+  return await new Promise((rs, rj) => {
+    const throwError = (e: unknown) => {
+      timerId && clearTimeout(timerId);
+      decryptErrored = true;
+      spinner.stop();
+      rj(e);
+    };
+    writeStream.on('finish', () => {
+      encryptEnd = true;
+      !showProgress && rs();
+    });
 
-  readStream.pipe(progress).pipe(brotli).pipe(cipher).pipe(prependInitVect).pipe(writeStream);
-  clock();
+    let runningStream: BrotliCompress | ProgressTransform = readStream
+      .on('error', throwError)
+      .pipe(progress)
+      .on('error', throwError);
+    if (compress) {
+      runningStream = runningStream.pipe(brotli).on('error', throwError);
+    }
+    runningStream
+      .pipe(cipher)
+      .on('error', throwError)
+      .pipe(prependInitVect)
+      .on('error', throwError)
+      .pipe(writeStream)
+      .on('error', throwError);
+    if (showProgress) {
+      timerId = setTimeout(() => {
+        spinner.start();
+        clock(rs);
+      }, 300);
+    }
+  });
 };
 
 export default encrypt;

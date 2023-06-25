@@ -1,4 +1,5 @@
-import encrypt from './encrypt.js';
-import decrypt from './decrypt.js';
-import { ProgressTransform } from './transform.js';
-export { encrypt, decrypt, ProgressTransform };
+import { type FuncParamsEncrypt } from './encrypt.js';
+import { type FuncParamsDecrypt } from './decrypt.js';
+export { ProgressTransform } from './transform.js';
+export declare const encrypt: (options: FuncParamsEncrypt) => Promise<void>;
+export declare const decrypt: (options: FuncParamsDecrypt) => Promise<void>;

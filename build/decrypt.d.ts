@@ -1,6 +1,7 @@
 interface FuncParamsDecrypt {
     file: string;
     password: string;
+    outFile?: string;
 }
 interface FuncDecrypt {
     (p: FuncParamsDecrypt): void;

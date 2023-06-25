@@ -7,7 +7,7 @@ import ora from 'ora';
 import chalk from 'chalk';
 import { PrependInitVectTransform, ProgressTransform } from './transform.js';
 import { getCipherKey, to2Str, eol, gestureIcon } from './util.js';
-const encrypt = ({ file, password }) => {
+const encrypt = ({ file, password, outFile }) => {
     const initVectOrigin = randomBytes(16);
     const headerStr = 'lit';
     const header = headerStr.split('').map((item) => item.charCodeAt(0));
@@ -26,7 +26,7 @@ const encrypt = ({ file, password }) => {
     });
     const cipher = createCipheriv('aes256', cipherKey, initVectOrigin);
     const prependInitVect = new PrependInitVectTransform(initVect);
-    const writeStream = createWriteStream(join(file + '.Lit'));
+    const writeStream = createWriteStream(join(outFile ?? file + '.Lit'));
     const spinner = ora({
         text: '进度 00% [----------]',
         prefixText: ` ${chalk.blue('(°ー°〃)')} 已用时间: 00:00${eol}`

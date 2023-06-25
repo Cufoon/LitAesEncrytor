@@ -15,13 +15,15 @@ interface FuncParamsEncrypt {
   file: string;
   /** 加密的密码 */
   password: string;
+  /** 加密后文件的路径 */
+  outFile?: string;
 }
 
 interface FuncEncrypt {
   (p: FuncParamsEncrypt): void;
 }
 
-const encrypt: FuncEncrypt = ({ file, password }) => {
+const encrypt: FuncEncrypt = ({ file, password, outFile }) => {
   const initVectOrigin = randomBytes(16);
   const headerStr = 'lit';
   const header = headerStr.split('').map((item) => item.charCodeAt(0));
@@ -44,7 +46,7 @@ const encrypt: FuncEncrypt = ({ file, password }) => {
   });
   const cipher = createCipheriv('aes256', cipherKey, initVectOrigin);
   const prependInitVect = new PrependInitVectTransform(initVect);
-  const writeStream = createWriteStream(join(file + '.Lit'));
+  const writeStream = createWriteStream(join(outFile ?? file + '.Lit'));
 
   const spinner = ora({
     text: '进度 00% [----------]',

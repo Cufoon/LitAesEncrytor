@@ -1,7 +1,7 @@
 import { createDecipheriv } from 'node:crypto';
 import { createReadStream, createWriteStream, statSync } from 'node:fs';
 import { createBrotliDecompress } from 'node:zlib';
-import { dirname, parse, resolve } from 'node:path';
+import { dirname, join, parse, resolve } from 'node:path';
 
 import ora from 'ora';
 import chalk from 'chalk';
@@ -14,13 +14,15 @@ interface FuncParamsDecrypt {
   file: string;
   /** 解密的密码 */
   password: string;
+  /** 解密后文件的路径 */
+  outFile?: string;
 }
 
 interface FuncDecrypt {
   (p: FuncParamsDecrypt): void;
 }
 
-const decrypt: FuncDecrypt = ({ file, password }) => {
+const decrypt: FuncDecrypt = ({ file, password, outFile }) => {
   const originFileInfo = statSync(file);
   const chunksN = Math.ceil(originFileInfo.size / (64 * 1024));
   const readInitVect = createReadStream(file, { end: 18 });
@@ -33,6 +35,7 @@ const decrypt: FuncDecrypt = ({ file, password }) => {
   readInitVect.on('close', () => {
     if (initVect === undefined || initVect.byteLength === 0) {
       console.log('未能读取到初始向量！');
+      return;
     }
     const initVectOrigin = [];
     const len = initVect.byteLength;
@@ -49,7 +52,9 @@ const decrypt: FuncDecrypt = ({ file, password }) => {
     if (originExtName.toLowerCase() !== '.lit') {
       console.log('加密文件格式错误！');
     }
-    const writeStream = createWriteStream(resolve(dirname(file), `${originFile.name}.Til`));
+    const writeStream = createWriteStream(
+      outFile ? join(outFile) : resolve(dirname(file), `${originFile.name}.Til`)
+    );
     const spinner = ora({
       text: '进度 00% [----------]',
       prefixText: ` ${chalk.blue('(°ー°〃)')} 已用时间: 00:00${eol}`

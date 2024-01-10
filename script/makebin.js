@@ -8,9 +8,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const packagePath = resolve(__dirname, '../package.json');
-const appFilePath = resolve(__dirname, '../build/app.js');
-const appInfoFilePath = resolve(__dirname, '../build/version.js');
-const appInfoFileTsPath = resolve(__dirname, '../build/version.d.ts');
+const appFilePath = resolve(__dirname, '../tsbuild/app.js');
+const appInfoFilePath = resolve(__dirname, '../tsbuild/version.js');
+const appInfoFileTsPath = resolve(__dirname, '../tsbuild/version.d.ts');
 
 const packageInfo = JSON.parse(fs.readFileSync(packagePath).toString());
 const appVersion = packageInfo.version;

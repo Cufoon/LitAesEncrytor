@@ -24,7 +24,7 @@ program
     }
   })
   // .showHelpAfterError()
-  .addHelpCommand('help [command]', 'Display help for command');
+  .helpCommand('help [command]', 'Display help for command');
 
 program
   .command('version')

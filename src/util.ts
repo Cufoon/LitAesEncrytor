@@ -1,7 +1,10 @@
 import { EOL } from 'node:os';
 import crypto from 'node:crypto';
+import { Readable, Writable } from 'node:stream';
 import passwordInput from '@inquirer/password';
-import { i18n, type i18nType } from './i18n.js';
+import { i18n } from './i18n.js';
+
+import type { i18nType } from './i18n.js';
 
 let i18nOnly: i18nType | null = null;
 
@@ -101,4 +104,26 @@ export const getPasswordFromUser = async (
     console.log('password got from environment variable LITAES_PASSWORD');
   }
   return password;
+};
+
+export const createReadableStream = (content: string | Buffer) => {
+  return Readable.from(content);
+};
+
+export const createWritableStream = (callback: (arg0: Buffer) => void) => {
+  let buffers: Uint8Array[] = [];
+
+  const writer = new Writable({
+    write(chunk, encoding, cb) {
+      buffers.push(chunk);
+      cb();
+    }
+  });
+
+  writer.on('finish', () => {
+    const combinedBuffer = Buffer.concat(buffers);
+    callback(combinedBuffer);
+  });
+
+  return writer;
 };

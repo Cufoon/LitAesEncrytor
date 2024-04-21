@@ -1,6 +1,6 @@
 {
   "name": "litaes",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "author": {
     "name": "Lin Cufoon",
     "email": "cufoon@gmail.com",
@@ -19,9 +19,9 @@
     "url": "https://github.com/Cufoon/LitAesEncrytor/issues",
     "email": "cufoon@gmail.com"
   },
-  "main": "build/index.js",
+  "main": "./esm/api/index.js",
   "bin": {
-    "litaes": "./build/app.cjs"
+    "litaes": "./cmd/app.cjs"
   },
   "type": "module",
   "repository": {
@@ -32,7 +32,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "node ./script/clear.js && tsc --build && node ./script/makebin.js && esbuild ./tsbuild/app.js --bundle --platform=node --format=cjs --outfile=./build/app.cjs && node ./script/clearTemp.js",
+    "build": "node ./script/clear.js && tsc --build && node ./script/makebin.js && node ./script/makeesm.js && esbuild ./tsbuild/app.js --bundle --minify --platform=node --format=cjs --outfile=./cmd/app.cjs && node ./script/clearTemp.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "MIT",

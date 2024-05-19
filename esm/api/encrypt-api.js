@@ -1,7 +1,7 @@
 import { randomBytes, createCipheriv } from 'node:crypto';
 import { createBrotliCompress, constants } from 'node:zlib';
-import { PrependInitVectTransform, ProgressTransform } from './transform.js';
-import { getCipherKey, createReadableStream, createWritableStream } from './util.js';
+import { PrependInitVectTransform, ProgressTransform } from '../transform.js';
+import { getCipherKey, createReadableStream, createWritableStream } from '../util.js';
 const encrypt = async ({ content, password, onProgress, compress = false }) => {
     const initVectOrigin = randomBytes(16);
     const headerStr = `lit${compress ? 'c' : 'a'}`;

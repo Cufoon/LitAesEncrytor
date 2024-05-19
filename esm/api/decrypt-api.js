@@ -1,7 +1,7 @@
 import { Decipher, createDecipheriv } from 'node:crypto';
 import { createBrotliDecompress } from 'node:zlib';
-import { ProgressTransform } from './transform.js';
-import { getCipherKey, createReadableStream, createWritableStream } from './util.js';
+import { ProgressTransform } from '../transform.js';
+import { getCipherKey, createReadableStream, createWritableStream } from '../util.js';
 const getInitVect = (content) => content.subarray(0, 20);
 const decrypt = async ({ content, password, onProgress }) => {
     const chunksN = Math.ceil(content.length / (64 * 1024));

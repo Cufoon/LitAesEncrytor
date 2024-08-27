@@ -2,6 +2,8 @@
 
 A tool to help encrypt and decrypt your data using AES-256 algorithm.
 
+The algorithm is AES-256-CBC in openssl.
+
 And it could be also used as an library.
 
 ## Install

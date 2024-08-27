@@ -4,17 +4,17 @@ A tool to help encrypt and decrypt your data using AES-256 algorithm.
 
 And it could be also used as an library.
 
-# Install
+## Install
 
 ```sh
 npm i -g litaes
 ```
 
-# Usage
+## Usage
 
-## Encrypt File
+### Encrypt File
 
-```shell
+```ruby
 # Encrypt File
 ## This will generate encrypted file in the same directory of origin file.
 ## The encrypted file's format is `Lit`.
@@ -31,11 +31,12 @@ litaes encrypt file_to_encrypt --password [password]
 ### But if you want input your password, keep `-p` empty.
 ```
 
-## Decrypt File
+### Decrypt File
 
-**This tool can only decrypt files encrypted by this tool.**
+> [!CAUTION]
+> This tool can only decrypt files encrypted by this tool.
 
-```shell
+```ruby
 # Decrypt File
 ## This will generate decrypted file in the same directory of origin file.
 ## The decrypted file's format is `Til`.

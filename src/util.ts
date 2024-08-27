@@ -5,6 +5,7 @@ import passwordInput from '@inquirer/password';
 import { i18n } from './i18n.js';
 
 import type { i18nType } from './i18n.js';
+import type { Command } from '@commander-js/extra-typings';
 
 let i18nOnly: i18nType | null = null;
 
@@ -51,7 +52,7 @@ export const gestureIcon = (percent: number) => {
 
 type MakeAsyncInPromise<T> = (
   resolve: (value: T | PromiseLike<T>) => void,
-  reject: (reason?: any) => void
+  reject: (reason?: unknown) => void
 ) => Promise<T>;
 
 export const makePromise = <T>(fn: MakeAsyncInPromise<T>) =>
@@ -59,20 +60,35 @@ export const makePromise = <T>(fn: MakeAsyncInPromise<T>) =>
     fn(resolve, reject);
   });
 
-export const isNull = (v: any) => v === undefined || v === null;
+export const isNull = <T>(v: T) => v === undefined || v === null;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isNullLike = (v: any) =>
   isNull(v) ||
   v === '' ||
   v === false ||
   (Object.prototype.toString.call(v) === '[object Array]' && v.length === 0) ||
   Object.getOwnPropertyNames(v).length == 0;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isNotBlankString = (v: any) =>
   Object.prototype.toString.call(v) === '[object String]' && v.length > 0;
 
 export const getPasswordFromUser = async (
   password: string | undefined,
-  options: any,
-  command: any,
+  options: {
+    verbose?: true | undefined;
+    outFile?: string | undefined;
+    password?: string | true | undefined;
+  },
+  command: Command<
+    [string, string | undefined],
+    {
+      verbose?: true | undefined;
+      outFile?: string | undefined;
+      password?: string | true | undefined;
+    }
+  >,
   verbose = false
 ): Promise<string | undefined> => {
   let fromEnvironment = false;
@@ -98,7 +114,6 @@ export const getPasswordFromUser = async (
     command.error(
       'please supply password in command or -p or environment variable LITAES_PASSWORD'
     );
-    return undefined;
   }
   if (fromEnvironment) {
     console.log('password got from environment variable LITAES_PASSWORD');
@@ -111,10 +126,10 @@ export const createReadableStream = (content: string | Buffer) => {
 };
 
 export const createWritableStream = (callback: (arg0: Buffer) => void) => {
-  let buffers: Uint8Array[] = [];
+  const buffers: Uint8Array[] = [];
 
   const writer = new Writable({
-    write(chunk, encoding, cb) {
+    write(chunk, _encoding, cb) {
       buffers.push(chunk);
       cb();
     }

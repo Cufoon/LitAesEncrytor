@@ -23,14 +23,14 @@ fs.appendFileSync(appFilePath, dataApp);
 const nowVersion = `LitAES v${appVersion}(${nowDate.toLocaleDateString()} ${nowDate.toLocaleTimeString()})`;
 const dataAppInfoPlaceholder = fs.readFileSync(appInfoFilePath).toString();
 const dataAppInfo = dataAppInfoPlaceholder.replace(
-  'cufoon_application_version_info_placehodler',
+  'cufoon_application_version_info_placehodler_r9b7o7W5Er48fLZU4jFD',
   `${nowVersion} @Cufoon`
 );
 fs.writeFileSync(appInfoFilePath, dataAppInfo);
 
 const dataAppInfoPlaceholderTs = fs.readFileSync(appInfoFileTsPath).toString();
 const dataAppInfoTs = dataAppInfoPlaceholderTs.replace(
-  'cufoon_application_version_info_placehodler',
+  'cufoon_application_version_info_placehodler_r9b7o7W5Er48fLZU4jFD',
   `${nowVersion} @Cufoon`
 );
 fs.writeFileSync(appInfoFileTsPath, dataAppInfoTs);

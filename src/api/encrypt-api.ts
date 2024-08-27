@@ -9,7 +9,7 @@ import type { Readable } from 'node:stream';
 export interface FuncParamsEncrypt {
   content: Buffer;
   password: string;
-  onProgress?: (percent: number, allN: number) => any;
+  onProgress?: <T>(percent: number, allN: number) => T;
   compress?: boolean;
 }
 

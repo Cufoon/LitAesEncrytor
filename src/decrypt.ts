@@ -22,7 +22,7 @@ export interface FuncParamsDecrypt {
   /** 展示进度 */
   showProgress?: boolean;
   /** 进度回调函数 */
-  onProgress?: (percent: number, allN: number) => any;
+  onProgress?: <T>(percent: number, allN: number) => T;
 }
 
 interface FuncDecrypt {

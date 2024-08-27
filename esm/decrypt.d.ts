@@ -3,7 +3,7 @@ export interface FuncParamsDecrypt {
     password: string;
     outFile?: string;
     showProgress?: boolean;
-    onProgress?: (percent: number, allN: number) => any;
+    onProgress?: <T>(percent: number, allN: number) => T;
 }
 interface FuncDecrypt {
     (p: FuncParamsDecrypt): Promise<void>;

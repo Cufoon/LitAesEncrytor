@@ -21,6 +21,7 @@ program
         console.log(command.helpInformation());
     }
 })
+    .showHelpAfterError()
     .helpCommand('help [command]', 'Display help for command');
 program
     .command('version')

@@ -11,7 +11,7 @@ export class PrependInitVectTransform extends Transform {
     this.notPrepended = true;
   }
 
-  _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
+  _transform(chunk: unknown, encoding: BufferEncoding, callback: TransformCallback) {
     if (this.notPrepended) {
       this.push(this.initVect);
       this.notPrepended = false;
@@ -23,14 +23,14 @@ export class PrependInitVectTransform extends Transform {
 
 interface ProgressTransformConstructorOption {
   total: number;
-  updateProcess?: (percent: number) => any;
+  updateProcess?: (percent: number) => unknown;
 }
 
 export class ProgressTransform extends Transform {
   processedChunksN = 0;
   totalChunksN = 0;
 
-  updateProcess(percent: number): any {
+  updateProcess(percent: number) {
     console.log('current progress:', percent, '%');
   }
 
@@ -46,7 +46,7 @@ export class ProgressTransform extends Transform {
     }
   }
 
-  _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
+  _transform(chunk: unknown, encoding: BufferEncoding, callback: TransformCallback) {
     this.processedChunksN++;
     const cp = (this.processedChunksN * 100) / this.totalChunksN;
     this.updateProcess(cp);

@@ -23,7 +23,7 @@ program
       console.log(command.helpInformation());
     }
   })
-  // .showHelpAfterError()
+  .showHelpAfterError()
   .helpCommand('help [command]', 'Display help for command');
 
 program

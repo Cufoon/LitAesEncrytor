@@ -1,1 +1,1 @@
-export const APP_VERSION_INFO = 'cufoon_application_version_info_placehodler';
+export const APP_VERSION_INFO = 'cufoon_application_version_info_placehodler_r9b7o7W5Er48fLZU4jFD';

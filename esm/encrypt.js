@@ -50,7 +50,7 @@ const encrypt = async ({ file, password, outFile, showProgress = true, onProgres
     const progress = new ProgressTransform({
         total: chunksN,
         updateProcess: (percent) => {
-            onProgress && onProgress(percent, chunksN);
+            onProgress?.(percent, chunksN);
             if (showProgress) {
                 const floored = Math.floor(percent);
                 if (floored > lastProgressPercent) {

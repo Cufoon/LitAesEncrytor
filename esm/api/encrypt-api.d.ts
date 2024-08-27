@@ -1,8 +1,7 @@
-/// <reference types="node" resolution-mode="require"/>
 export interface FuncParamsEncrypt {
     content: Buffer;
     password: string;
-    onProgress?: (percent: number, allN: number) => any;
+    onProgress?: <T>(percent: number, allN: number) => T;
     compress?: boolean;
 }
 interface FuncEncrypt {

@@ -1,1 +1,1 @@
-export declare const APP_VERSION_INFO = "LitAES v1.0.9(2024/5/19 14:51:12) @Cufoon";
+export declare const APP_VERSION_INFO = "LitAES v1.0.10(2024/8/27 13:58:36) @Cufoon";

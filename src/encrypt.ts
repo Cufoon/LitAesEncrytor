@@ -23,7 +23,7 @@ export interface FuncParamsEncrypt {
   /** 展示进度 */
   showProgress?: boolean;
   /** 进度回调函数 */
-  onProgress?: (percent: number, allN: number) => any;
+  onProgress?: <T>(percent: number, allN: number) => T;
   /** 是否压缩 */
   compress?: boolean;
 }
@@ -87,7 +87,7 @@ const encrypt: FuncEncrypt = async ({
   const progress = new ProgressTransform({
     total: chunksN,
     updateProcess: (percent) => {
-      onProgress && onProgress(percent, chunksN);
+      onProgress?.(percent, chunksN);
       if (showProgress) {
         const floored = Math.floor(percent);
         if (floored > lastProgressPercent) {

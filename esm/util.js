@@ -73,7 +73,6 @@ export const getPasswordFromUser = async (password, options, command, verbose = 
     }
     if (isNullLike(password)) {
         command.error('please supply password in command or -p or environment variable LITAES_PASSWORD');
-        return undefined;
     }
     if (fromEnvironment) {
         console.log('password got from environment variable LITAES_PASSWORD');
@@ -84,9 +83,9 @@ export const createReadableStream = (content) => {
     return Readable.from(content);
 };
 export const createWritableStream = (callback) => {
-    let buffers = [];
+    const buffers = [];
     const writer = new Writable({
-        write(chunk, encoding, cb) {
+        write(chunk, _encoding, cb) {
             buffers.push(chunk);
             cb();
         }

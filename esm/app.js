@@ -77,7 +77,11 @@ program
     }
     if (password !== undefined) {
         try {
-            await decrypt({ file: file, password: password, outFile: options.outFile });
+            await decrypt({
+                file: file,
+                password: password,
+                outFile: options.outFile
+            });
         }
         catch (e) {
             console.log(i18n['app.error.tip']);

@@ -2,6 +2,7 @@ import { EOL } from 'node:os';
 import crypto from 'node:crypto';
 import { Readable, Writable } from 'node:stream';
 import passwordInput from '@inquirer/password';
+import { CHUNK_SIZE } from './constant.js';
 import { i18n } from './i18n.js';
 let i18nOnly = null;
 export const getI18n = () => {
@@ -80,7 +81,7 @@ export const getPasswordFromUser = async (password, options, command, verbose = 
     return password;
 };
 export const createReadableStream = (content) => {
-    return Readable.from(content);
+    return Readable.from(content, { highWaterMark: CHUNK_SIZE });
 };
 export const createWritableStream = (callback) => {
     const buffers = [];

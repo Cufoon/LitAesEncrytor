@@ -1,4 +1,4 @@
-import type { FuncParamsEncrypt } from './encrypt-api.js';
-import type { FuncParamsDecrypt } from './decrypt-api.js';
-export declare const encrypt: (options: FuncParamsEncrypt) => Promise<Buffer>;
-export declare const decrypt: (options: FuncParamsDecrypt) => Promise<Buffer>;
+import type { DecryptParams } from './decrypt-api.js';
+import type { EncryptParams } from './encrypt-api.js';
+export declare const decrypt: (options: DecryptParams) => Promise<Buffer>;
+export declare const encrypt: (options: EncryptParams) => Promise<Buffer>;

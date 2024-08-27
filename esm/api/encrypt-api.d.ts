@@ -1,11 +1,11 @@
-export interface FuncParamsEncrypt {
-    content: Buffer;
+export interface EncryptParams {
+    content: Buffer | string;
     password: string;
     onProgress?: <T>(percent: number, allN: number) => T;
     compress?: boolean;
 }
-interface FuncEncrypt {
-    (p: FuncParamsEncrypt): Promise<Buffer>;
+interface EncryptFunc {
+    (p: EncryptParams): Promise<Buffer>;
 }
-declare const encrypt: FuncEncrypt;
+declare const encrypt: EncryptFunc;
 export default encrypt;

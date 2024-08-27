@@ -1,11 +1,14 @@
 import { EOL } from 'node:os';
 import crypto from 'node:crypto';
 import { Readable, Writable } from 'node:stream';
+
 import passwordInput from '@inquirer/password';
+
+import { CHUNK_SIZE } from './constant.js';
 import { i18n } from './i18n.js';
 
-import type { i18nType } from './i18n.js';
 import type { Command } from '@commander-js/extra-typings';
+import type { i18nType } from './i18n.js';
 
 let i18nOnly: i18nType | null = null;
 
@@ -74,21 +77,17 @@ export const isNullLike = (v: any) =>
 export const isNotBlankString = (v: any) =>
   Object.prototype.toString.call(v) === '[object String]' && v.length > 0;
 
+export interface CommandOptions {
+  verbose?: boolean;
+  outFile?: string;
+  password?: string | true;
+  [index: string]: unknown;
+}
+
 export const getPasswordFromUser = async (
   password: string | undefined,
-  options: {
-    verbose?: true | undefined;
-    outFile?: string | undefined;
-    password?: string | true | undefined;
-  },
-  command: Command<
-    [string, string | undefined],
-    {
-      verbose?: true | undefined;
-      outFile?: string | undefined;
-      password?: string | true | undefined;
-    }
-  >,
+  options: CommandOptions,
+  command: Command<[string, string | undefined], CommandOptions>,
   verbose = false
 ): Promise<string | undefined> => {
   let fromEnvironment = false;
@@ -122,7 +121,7 @@ export const getPasswordFromUser = async (
 };
 
 export const createReadableStream = (content: string | Buffer) => {
-  return Readable.from(content);
+  return Readable.from(content, { highWaterMark: CHUNK_SIZE });
 };
 
 export const createWritableStream = (callback: (arg0: Buffer) => void) => {

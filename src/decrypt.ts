@@ -1,6 +1,7 @@
-import { Decipher, createDecipheriv } from 'node:crypto';
-import { createReadStream, createWriteStream, existsSync, statSync } from 'node:fs';
-import { createBrotliDecompress, type BrotliDecompress } from 'node:zlib';
+import { createDecipheriv } from 'node:crypto';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
+import { createBrotliDecompress, constants } from 'node:zlib';
 import { dirname, join, parse, resolve } from 'node:path';
 
 import ora from 'ora';
@@ -9,6 +10,10 @@ import confirm from '@inquirer/confirm';
 
 import { ProgressTransform } from './transform.js';
 import { getCipherKey, to2Str, eol, gestureIcon, getI18n } from './util.js';
+import { CHUNK_SIZE } from './constant.js';
+
+import type { Decipher } from 'node:crypto';
+import type { BrotliDecompress } from 'node:zlib';
 
 const i18n = getI18n();
 
@@ -50,7 +55,7 @@ const decrypt: FuncDecrypt = async ({
   onProgress
 }): Promise<void> => {
   const originFileInfo = statSync(file);
-  const chunksN = Math.ceil(originFileInfo.size / (64 * 1024));
+  const chunksN = Math.ceil(originFileInfo.size / CHUNK_SIZE);
   const initVect = await getInitVect(file);
   if (initVect === undefined || initVect.byteLength === 0) {
     console.log(i18n['app.decrypt.error.fail_to_read_init_vector']);
@@ -67,11 +72,23 @@ const decrypt: FuncDecrypt = async ({
     initVectOrigin.push(initVect[i]);
   }
   const cipherKey = getCipherKey(password);
-  const decipher = createDecipheriv('aes256', cipherKey, Buffer.from(initVectOrigin));
-  const brotli = createBrotliDecompress();
+  const decipher = createDecipheriv(
+    'AES-256-CBC',
+    cipherKey,
+    Buffer.from(initVectOrigin)
+  );
+  const brotli = createBrotliDecompress({
+    params: {
+      [constants.BROTLI_PARAM_QUALITY]: 3
+    },
+    chunkSize: CHUNK_SIZE
+  });
 
   const originFile = parse(file);
-  const readStream = createReadStream(file, { start: 20 });
+  const readStream = createReadStream(file, {
+    start: 20,
+    highWaterMark: CHUNK_SIZE
+  });
   const writeStreamPath = outFile
     ? join(outFile)
     : resolve(dirname(file), `${originFile.name}.Til`);

@@ -1,5 +1,5 @@
 import { Transform } from 'node:stream';
-import type { TransformCallback, TransformOptions } from 'stream';
+import type { TransformCallback, TransformOptions } from 'node:stream';
 export declare class PrependInitVectTransform extends Transform {
     initVect: Buffer;
     notPrepended: boolean;

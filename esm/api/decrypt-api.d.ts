@@ -1,10 +1,10 @@
-export interface FuncParamsDecrypt {
-    content: Buffer;
+export interface DecryptParams {
+    content: Buffer | string;
     password: string;
     onProgress?: <T>(percent: number, allN: number) => T;
 }
-interface FuncDecrypt {
-    (p: FuncParamsDecrypt): Promise<Buffer>;
+interface DecryptFunc {
+    (p: DecryptParams): Promise<Buffer>;
 }
-declare const decrypt: FuncDecrypt;
+declare const decrypt: DecryptFunc;
 export default decrypt;

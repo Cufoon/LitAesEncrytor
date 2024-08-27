@@ -1,13 +1,14 @@
 import { randomBytes, createCipheriv } from 'node:crypto';
-import { createReadStream, createWriteStream, existsSync } from 'node:fs';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createBrotliCompress, constants } from 'node:zlib';
-import { statSync } from 'node:fs';
 import ora from 'ora';
 import chalk from 'chalk';
 import confirm from '@inquirer/confirm';
 import { PrependInitVectTransform, ProgressTransform } from './transform.js';
 import { getCipherKey, to2Str, eol, gestureIcon, getI18n } from './util.js';
+import { CHUNK_SIZE } from './constant.js';
 const i18n = getI18n();
 const encrypt = async ({ file, password, outFile, showProgress = true, onProgress, compress = true }) => {
     const initVectOrigin = randomBytes(16);
@@ -19,14 +20,15 @@ const encrypt = async ({ file, password, outFile, showProgress = true, onProgres
     const initVect = Buffer.from(header);
     const cipherKey = getCipherKey(password);
     const originFileInfo = statSync(file);
-    const chunksN = Math.ceil(originFileInfo.size / (64 * 1024));
-    const readStream = createReadStream(file);
+    const chunksN = Math.ceil(originFileInfo.size / CHUNK_SIZE);
+    const readStream = createReadStream(file, { highWaterMark: CHUNK_SIZE });
     const brotli = createBrotliCompress({
         params: {
             [constants.BROTLI_PARAM_QUALITY]: 3
-        }
+        },
+        chunkSize: CHUNK_SIZE
     });
-    const cipher = createCipheriv('aes256', cipherKey, initVectOrigin);
+    const cipher = createCipheriv('AES-256-CBC', cipherKey, initVectOrigin);
     const prependInitVect = new PrependInitVectTransform(initVect);
     const writeStreamPath = join(outFile ?? file + '.Lit');
     if (existsSync(writeStreamPath)) {

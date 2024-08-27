@@ -11,7 +11,9 @@ const program = new Command();
 
 program
   .name('litaes')
-  .description('A cli tool to help encrypt and decrypt your data using aes-256.')
+  .description(
+    'A cli tool to help encrypt and decrypt your data using aes-256.'
+  )
   .version(APP_VERSION_INFO, '-v, --version', 'Output the version information')
   .helpOption('-h, --help', 'The help information')
   .option('-V', 'Alias for --version')
@@ -41,12 +43,18 @@ program
   .option('-o, --out-file <file>', 'The encrypted output file path')
   .option('-nc, --no-compress', 'Not compress file using brotli before encrypt')
   .addOption(
-    new Option('-p, --password [password]', 'The password to encrypt a file using aes256').env(
-      'LITAES_PASSWORD'
-    )
+    new Option(
+      '-p, --password [password]',
+      'The password to encrypt a file using aes256'
+    ).env('LITAES_PASSWORD')
   )
   .action(async (file, password, options, command) => {
-    password = await getPasswordFromUser(password, options, command, options.verbose);
+    password = await getPasswordFromUser(
+      password,
+      options,
+      command,
+      options.verbose
+    );
     if (options.verbose) {
       console.log('file', file);
       console.log('password', password);
@@ -76,12 +84,18 @@ program
   .option('-v, --verbose', 'Show more detail information')
   .option('-o, --out-file <file>', 'The decrypted output file path')
   .addOption(
-    new Option('-p, --password [password]', 'The password to decrypt a file using aes256').env(
-      'LITAES_PASSWORD'
-    )
+    new Option(
+      '-p, --password [password]',
+      'The password to decrypt a file using aes256'
+    ).env('LITAES_PASSWORD')
   )
   .action(async (file, password, options, command) => {
-    password = await getPasswordFromUser(password, options, command, options.verbose);
+    password = await getPasswordFromUser(
+      password,
+      options,
+      command,
+      options.verbose
+    );
     if (options.verbose) {
       console.log('file', file);
       console.log('password', password);
@@ -89,7 +103,11 @@ program
     }
     if (password !== undefined) {
       try {
-        await decrypt({ file: file, password: password, outFile: options.outFile });
+        await decrypt({
+          file: file,
+          password: password,
+          outFile: options.outFile
+        });
       } catch (e: unknown) {
         console.log(i18n['app.error.tip']);
         console.error(e);

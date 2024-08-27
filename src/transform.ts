@@ -1,5 +1,6 @@
 import { Transform } from 'node:stream';
-import type { TransformCallback, TransformOptions } from 'stream';
+
+import type { TransformCallback, TransformOptions } from 'node:stream';
 
 export class PrependInitVectTransform extends Transform {
   initVect: Buffer;
@@ -11,7 +12,11 @@ export class PrependInitVectTransform extends Transform {
     this.notPrepended = true;
   }
 
-  _transform(chunk: unknown, encoding: BufferEncoding, callback: TransformCallback) {
+  _transform(
+    chunk: unknown,
+    encoding: BufferEncoding,
+    callback: TransformCallback
+  ) {
     if (this.notPrepended) {
       this.push(this.initVect);
       this.notPrepended = false;
@@ -46,7 +51,11 @@ export class ProgressTransform extends Transform {
     }
   }
 
-  _transform(chunk: unknown, encoding: BufferEncoding, callback: TransformCallback) {
+  _transform(
+    chunk: unknown,
+    encoding: BufferEncoding,
+    callback: TransformCallback
+  ) {
     this.processedChunksN++;
     const cp = (this.processedChunksN * 100) / this.totalChunksN;
     this.updateProcess(cp);

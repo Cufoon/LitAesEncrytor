@@ -21,12 +21,12 @@
   },
   "main": "./esm/api/index.js",
   "bin": {
-    "litaes": "./cmd/app.cjs"
+    "litaes": "cmd/app.cjs"
   },
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Cufoon/LitAesEncrytor.git"
+    "url": "git+https://github.com/Cufoon/LitAesEncrytor.git"
   },
   "directories": {
     "test": "test"
